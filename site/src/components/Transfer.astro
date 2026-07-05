@@ -105,8 +105,9 @@
 <style>
   .transfer {
     padding: clamp(1.25rem, 3vw, 2rem);
-    max-width: 34rem;
+    max-width: 39rem;
     width: 100%;
+    margin-inline: auto;
   }
 
   /* ---------- packet beam ---------- */
@@ -164,8 +165,8 @@
   #qr-canvas {
     border: 1px solid var(--mesh);
     border-radius: var(--radius-sm);
-    width: 200px;
-    height: 200px;
+    width: clamp(11.5rem, 38vw, 15rem);
+    height: clamp(11.5rem, 38vw, 15rem);
     background: #fff;
   }
   .room-code {
@@ -206,10 +207,10 @@
   .panel-center { display: grid; justify-items: center; gap: 0.75rem; text-align: center; }
   #scan-video {
     width: 100%;
-    max-width: 320px;
+    max-width: min(100%, 24rem);
     border-radius: var(--radius-sm);
     background: #000;
-    aspect-ratio: 1;
+    aspect-ratio: 4 / 5;
     object-fit: cover;
   }
   .scan-hint { font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
@@ -286,6 +287,29 @@
       border-top: 0;
       border-left: 1px solid var(--mesh);
       min-height: 2rem;
+    }
+  }
+
+  @media (max-width: 559px) {
+    .transfer {
+      padding: 1rem;
+    }
+
+    .pair-join-actions,
+    .pick-actions {
+      flex-direction: column;
+    }
+
+    .pair-join-actions .btn,
+    .pick-actions .btn,
+    .pick-actions .btn label {
+      width: 100%;
+      justify-content: center;
+    }
+
+    #scan-video {
+      max-width: 100%;
+      aspect-ratio: 1;
     }
   }
 </style>
