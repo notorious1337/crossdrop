@@ -1,0 +1,195 @@
+---
+import Base from '../layouts/Base.astro';
+import Transfer from '../components/Transfer.astro';
+import { faqs } from '../data/faq.js';
+
+const title =
+  'CrossDrop – AirDrop for Everyone | Send Files Between Android, iPhone, Windows & Mac';
+const description =
+  'Free cross-platform file transfer in your browser — the AirDrop alternative that works everywhere. Send photos, videos, and files between Android, iPhone, Windows, and Mac over Wi-Fi with no app, no login, and no quality loss.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'CrossDrop',
+    applicationCategory: 'UtilitiesApplication',
+    operatingSystem: 'Any (browser-based)',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description:
+      'Browser-based peer-to-peer file transfer between Android, iPhone, Windows, and Mac. No app install, no accounts, no compression.',
+    url: 'https://crossdrop.app/',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+];
+
+const features = [
+  { icon: '📱', title: 'Android ↔ iPhone', text: 'Works across any mobile OS combination — no ecosystem walls.' },
+  { icon: '💻', title: 'Windows ↔ Mac', text: 'And Linux, and Chromebooks. If it runs a modern browser, it works.' },
+  { icon: '📷', title: 'Original photo quality', text: 'No recompression, no resizing. Your pixels arrive untouched.' },
+  { icon: '🎥', title: 'Original video quality', text: 'Byte-for-byte transfer with zero format conversion.' },
+  { icon: '📄', title: 'Any file type', text: 'Documents, zips, apps, RAW files — no restrictions.' },
+  { icon: '🔒', title: 'Direct encrypted transfer', text: 'Peer-to-peer and encrypted in transit by design (WebRTC DTLS).' },
+  { icon: '🧾', title: 'QR code pairing', text: 'Scan to pair in seconds. No typing, no discovery lists.' },
+  { icon: '🚫', title: 'No login', text: 'Zero accounts. Zero personal data collected.' },
+  { icon: '⚡', title: 'No app install', text: 'Runs entirely in the browser — open a tab and send.' },
+];
+
+const steps = [
+  { title: 'Open CrossDrop on both devices', text: 'Any browser, any OS. The first device instantly gets a room code and QR code.' },
+  { title: 'Scan or type the code', text: 'The second device scans the QR code or types the room code — pairing takes seconds.' },
+  { title: 'Send at full quality', text: 'Pick files on either device. They stream directly between the two over your Wi-Fi — never through a server.' },
+];
+---
+
+<Base {title} {description} {jsonLd}>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Cross-platform file transfer</p>
+        <h1>
+          No Quality Loss.<br />No Login.<br />No Contact Sharing.
+        </h1>
+        <p class="hero-sub">
+          Transfer photos, videos, and files between any phone or computer over
+          your Wi-Fi — instantly and privately. No apps. No accounts. No
+          compression.
+        </p>
+        <p class="hero-note mono">Your files never touch our servers.</p>
+      </div>
+      <div class="hero-app" id="transfer">
+        <Transfer />
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="features-h">
+    <div class="wrap">
+      <p class="eyebrow">Why CrossDrop</p>
+      <h2 id="features-h">Everything AirDrop does — for every device you own</h2>
+      <ul class="feature-grid">
+        {features.map((f) => (
+          <li class="card feature">
+            <span class="feature-icon" aria-hidden="true">{f.icon}</span>
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2 id="how-h">From open tab to transferred file in under ten seconds</h2>
+      <ol class="steps">
+        {steps.map((s, i) => (
+          <li class="card step">
+            <span class="step-num mono">{i + 1}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="how-more">
+        Curious about what happens under the hood?
+        <a href="/how-it-works">Read the full explainer</a> or see
+        <a href="/vs-airdrop">how CrossDrop compares to AirDrop and Nearby Share</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="faq" aria-labelledby="faq-h">
+    <div class="wrap faq-wrap">
+      <p class="eyebrow">FAQ</p>
+      <h2 id="faq-h">Common questions</h2>
+      <div class="faq-list">
+        {faqs.slice(0, 6).map(({ q, a }) => (
+          <details class="card faq-item">
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))}
+      </div>
+      <p><a href="/faq">See all questions →</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-block: clamp(2.5rem, 6vw, 5rem); }
+  .hero-grid {
+    display: grid;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: center;
+  }
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 32rem;
+  }
+  .hero-note {
+    font-size: 0.85rem;
+    color: var(--signal);
+  }
+  .hero-app { display: flex; justify-content: center; }
+
+  @media (min-width: 900px) {
+    .hero-grid { grid-template-columns: 1.05fr 1fr; }
+  }
+
+  .feature-grid {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .feature { padding: 1.25rem; }
+  .feature-icon { font-size: 1.4rem; }
+  .feature h3 { margin: 0.5rem 0 0.25rem; }
+  .feature p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+
+  .steps {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+  .step { padding: 1.5rem 1.25rem; }
+  .step-num {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--signal);
+    color: #fff;
+    font-size: 0.95rem;
+  }
+  .step h3 { margin: 0.75rem 0 0.25rem; }
+  .step p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+  .how-more { margin-top: 1.5rem; }
+
+  .faq-wrap { max-width: 46rem; }
+  .faq-list { display: grid; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .faq-item { padding: 0; }
+  .faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+  }
+  .faq-item p { padding: 0 1.25rem 1rem; margin: 0; color: var(--ink-soft); }
+</style>

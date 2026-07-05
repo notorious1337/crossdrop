@@ -1,0 +1,32 @@
+# Render Blueprint — deploys the whole CrossDrop stack in one click.
+# In Render: New → Blueprint → select this repo. Two services are created:
+#   1. crossdrop-signaling  (Node WebSocket server, gets wss:// automatically)
+#   2. crossdrop-site       (static Astro build)
+# After the first deploy, Render injects the signaling server's URL into the
+# site build via PUBLIC_SIGNALING_URL (converted to wss:// by the build cmd).
+services:
+  - type: web
+    name: crossdrop-signaling
+    runtime: node
+    rootDir: signaling-server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+
+  - type: web
+    name: crossdrop-site
+    runtime: static
+    rootDir: site
+    plan: free
+    buildCommand: >-
+      PUBLIC_SIGNALING_URL="wss://${SIGNALING_HOST}"
+      npm install && npm run build
+    staticPublishPath: dist
+    autoDeploy: true
+    envVars:
+      - key: SIGNALING_HOST
+        fromService:
+          type: web
+          name: crossdrop-signaling
+          property: host

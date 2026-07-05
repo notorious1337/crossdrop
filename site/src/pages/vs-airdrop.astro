@@ -1,0 +1,108 @@
+---
+import Base from '../layouts/Base.astro';
+
+const title = 'CrossDrop vs AirDrop vs Nearby Share – The Cross-Platform AirDrop Alternative';
+const description =
+  'AirDrop is Apple-only and Quick Share (Nearby Share) is Android-first. CrossDrop works between Android, iPhone, Windows, and Mac in the browser — no app, no login, no contact sharing, no quality loss.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'CrossDrop', item: 'https://crossdrop.app/' },
+      { '@type': 'ListItem', position: 2, name: 'CrossDrop vs AirDrop', item: 'https://crossdrop.app/vs-airdrop' },
+    ],
+  },
+];
+
+const rows = [
+  ['Android ↔ iPhone', '✅ Yes', '❌ Apple devices only', '⚠️ Limited (Android-first)'],
+  ['Windows ↔ Mac', '✅ Yes', '❌ No', '⚠️ Windows app, no macOS'],
+  ['Works in the browser', '✅ Yes — nothing to install', '❌ Built into the OS', '❌ App / OS feature'],
+  ['Account required', '✅ None', '⚠️ Apple ID', '⚠️ Google account for some modes'],
+  ['Contact list access', '✅ Never', '⚠️ Contact-based discovery', '⚠️ Contact-based discovery'],
+  ['Original quality guaranteed', '✅ Byte-for-byte', '✅ Yes', '✅ Yes'],
+  ['Discovery / visibility settings', '✅ None needed — explicit QR/code pairing', '⚠️ "Who can see me" settings', '⚠️ Device visibility settings'],
+  ['Files touch a server', '✅ Never', '✅ No', '⚠️ Some fallback modes'],
+];
+---
+
+<Base {title} {description} {jsonLd}>
+  <article class="wrap article">
+    <p class="eyebrow">Comparison</p>
+    <h1>CrossDrop vs AirDrop vs Quick Share</h1>
+    <p class="lede">
+      AirDrop is excellent — inside Apple's walls. Quick Share (formerly
+      Nearby Share) covers the Android side. The moment your two devices sit
+      on different sides of that wall, both leave you re-compressing photos
+      through WhatsApp or emailing files to yourself. CrossDrop exists for
+      exactly that moment.
+    </p>
+
+    <div class="table-scroll">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th scope="col">Capability</th>
+            <th scope="col">CrossDrop</th>
+            <th scope="col">Apple AirDrop</th>
+            <th scope="col">Quick Share</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([cap, cd, ad, ns]) => (
+            <tr>
+              <th scope="row">{cap}</th>
+              <td>{cd}</td>
+              <td>{ad}</td>
+              <td>{ns}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>No contact sharing — pairing is explicit</h2>
+    <p>
+      AirDrop and Quick Share discover nearby people through your contacts,
+      Apple ID, or device visibility settings — which is exactly how
+      strangers end up in your share sheet and why "who can see me" settings
+      exist at all. CrossDrop has no discovery. Nobody can see your device.
+      A connection only exists when you deliberately share a QR code or room
+      code with the other device, and it dies the moment you're done.
+    </p>
+
+    <h2>No quality loss — unlike the usual workarounds</h2>
+    <p>
+      The common cross-platform workarounds all degrade your media:
+      messaging apps recompress photos and videos aggressively, email caps
+      attachment sizes, and cloud round-trips are slow and often transcode.
+      CrossDrop sends the original file, byte for byte, at local Wi-Fi
+      speed.
+    </p>
+
+    <h2>When AirDrop is still the right tool</h2>
+    <p>
+      Honest answer: if both devices are Apple and near each other, AirDrop
+      is seamless and works offline without any setup. CrossDrop is the tool
+      for every other combination — mixed households, Android-to-iPhone
+      photo handoffs, moving files onto a work Windows laptop, or sharing
+      with someone whose contact you don't have (and don't want to add).
+    </p>
+
+    <p class="cta-row">
+      <a class="btn btn-primary" href="/#transfer">Send a file with CrossDrop</a>
+      <a class="btn btn-ghost" href="/how-it-works">See how it works</a>
+    </p>
+  </article>
+</Base>
+
+<style>
+  .article { max-width: 48rem; padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+  .lede { font-size: 1.15rem; color: var(--ink-soft); }
+  .article h2 { margin-top: 2.25rem; }
+  .table-scroll { overflow-x: auto; margin-block: 1.5rem; }
+  table.compare th[scope='row'] { font-weight: 600; }
+  .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2.5rem; }
+</style>

@@ -1,0 +1,17 @@
+{
+  "name": "CrossDrop — AirDrop for Everyone",
+  "short_name": "CrossDrop",
+  "description": "Send files between any two devices over Wi-Fi. No app, no login, no quality loss.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3f5f2",
+  "theme_color": "#2742e6",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

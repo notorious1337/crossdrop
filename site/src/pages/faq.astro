@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import { faqs } from '../data/faq.js';
+
+const title = 'CrossDrop FAQ – Cross-Platform File Transfer Questions Answered';
+const description =
+  'Answers about CrossDrop: sending files between Android and iPhone, transfer quality, encryption, file size limits, Wi-Fi requirements, and privacy.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'CrossDrop', item: 'https://crossdrop.app/' },
+      { '@type': 'ListItem', position: 2, name: 'FAQ', item: 'https://crossdrop.app/faq' },
+    ],
+  },
+];
+---
+
+<Base {title} {description} {jsonLd}>
+  <article class="wrap article">
+    <p class="eyebrow">FAQ</p>
+    <h1>Frequently asked questions</h1>
+    <div class="faq-list">
+      {faqs.map(({ q, a }) => (
+        <details class="card faq-item">
+          <summary>{q}</summary>
+          <p>{a}</p>
+        </details>
+      ))}
+    </div>
+    <p class="cta-row">
+      <a class="btn btn-primary" href="/#transfer">Send a file now</a>
+    </p>
+  </article>
+</Base>
+
+<style>
+  .article { max-width: 44rem; padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+  .faq-list { display: grid; gap: 0.75rem; margin-top: 1.5rem; }
+  .faq-item { padding: 0; }
+  .faq-item summary { cursor: pointer; font-weight: 600; padding: 1rem 1.25rem; }
+  .faq-item p { padding: 0 1.25rem 1rem; margin: 0; color: var(--ink-soft); }
+  .cta-row { margin-top: 2rem; }
+</style>

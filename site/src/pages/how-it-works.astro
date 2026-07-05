@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+
+const title = 'How CrossDrop Works – Peer-to-Peer WebRTC File Transfer Explained';
+const description =
+  'How CrossDrop transfers files between Android, iPhone, Windows, and Mac without a server: QR pairing, WebRTC data channels, chunked streaming, and mandatory encryption — explained step by step.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'CrossDrop', item: 'https://crossdrop.app/' },
+      { '@type': 'ListItem', position: 2, name: 'How it works', item: 'https://crossdrop.app/how-it-works' },
+    ],
+  },
+];
+---
+
+<Base {title} {description} {jsonLd}>
+  <article class="wrap article">
+    <p class="eyebrow">How it works</p>
+    <h1>Your files go device-to-device. Here's exactly what that means.</h1>
+    <p class="lede">
+      Most "send a file to another phone" tools quietly upload your file to a
+      server, then download it again on the other side — slow, and your data
+      sits on someone else's machine. CrossDrop takes a different route: the
+      two devices talk to each other directly.
+    </p>
+
+    <h2>1. Pairing: a room code and a QR code</h2>
+    <p>
+      When you open CrossDrop, it asks our tiny pairing server for a fresh
+      room — a short, human-readable code like
+      <code class="mono">swift-otter-42</code> — and renders it as a QR code.
+      The second device joins by scanning the code or typing it in. Rooms
+      hold exactly two devices, are single-use, and expire after ten minutes
+      if nobody joins.
+    </p>
+
+    <h2>2. The handshake: WebRTC signaling</h2>
+    <p>
+      Once both devices are in the room, they exchange a small set of
+      connection details through the pairing server: a session description
+      (what each browser can do) and ICE candidates (the network addresses
+      each device can be reached at). This is the only job the server has.
+      It never sees file names, file sizes, or file contents — only the
+      handshake, which it forgets the moment pairing completes.
+    </p>
+
+    <h2>3. The direct connection</h2>
+    <p>
+      With addresses exchanged, the browsers open a direct
+      <strong>WebRTC data channel</strong> between the two devices. On the
+      same Wi-Fi network, this connection usually forms over the local
+      network itself — your files never leave your router. That's why
+      transfers run at local Wi-Fi speed instead of being throttled by your
+      internet upload speed.
+    </p>
+    <p>
+      A public STUN server helps devices discover their addresses when they
+      sit behind different routers. On networks that block direct
+      connections entirely (some corporate and hotel networks), a TURN relay
+      can carry the encrypted stream as a fallback.
+    </p>
+
+    <h2>4. The transfer: chunked, streamed, and full quality</h2>
+    <p>
+      Files are sliced into small chunks (around 64 KB) and streamed over
+      the data channel in order, with backpressure handling so the pipe
+      stays full without overwhelming either device. The receiver reassembles
+      the chunks into an exact byte-for-byte copy — no recompression, no
+      resizing, no format conversion. For very large files, supporting
+      browsers can stream chunks straight to disk as they arrive.
+    </p>
+
+    <h2>5. Encryption isn't a feature — it's the protocol</h2>
+    <p>
+      Every WebRTC connection is encrypted in transit with DTLS. It is
+      mandatory in the standard: an unencrypted WebRTC data channel simply
+      cannot exist. Combined with the fact that files never touch a server,
+      that means nobody in the middle — including us — can read what you
+      send.
+    </p>
+
+    <h2>Known limitation: isolated Wi-Fi networks</h2>
+    <p>
+      Some routers enable <em>AP/client isolation</em>, which blocks devices
+      on the same Wi-Fi from talking to each other (common on guest and
+      hotel networks). If pairing fails there, a phone hotspot with both
+      devices connected to it works reliably.
+    </p>
+
+    <p class="cta-row">
+      <a class="btn btn-primary" href="/#transfer">Try it now — send a file</a>
+      <a class="btn btn-ghost" href="/vs-airdrop">Compare with AirDrop</a>
+    </p>
+  </article>
+</Base>
+
+<style>
+  .article { max-width: 44rem; padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+  .lede { font-size: 1.15rem; color: var(--ink-soft); }
+  .article h2 { margin-top: 2.25rem; }
+  code { background: var(--surface); border: 1px solid var(--mesh); border-radius: 6px; padding: 0.1em 0.4em; font-size: 0.9em; }
+  .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2.5rem; }
+</style>

@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+
+const title = 'CrossDrop Privacy – Your Files Never Touch Our Servers';
+const description =
+  'CrossDrop privacy policy: files transfer peer-to-peer with mandatory WebRTC encryption, no accounts, no contact access, no file storage, and no tracking of individual transfers.';
+---
+
+<Base {title} {description}>
+  <article class="wrap article">
+    <p class="eyebrow">Privacy</p>
+    <h1>Privacy policy</h1>
+    <p class="lede">
+      CrossDrop is built so that there is almost nothing about you for us to
+      know. This page explains the little that happens, in plain language.
+    </p>
+
+    <h2>Your files never touch our servers</h2>
+    <p>
+      Files transfer directly between your two devices over a peer-to-peer
+      WebRTC connection. They are never uploaded to, stored on, or relayed
+      through our infrastructure. We could not read your files even if we
+      wanted to — they simply don't pass through us.
+    </p>
+
+    <h2>Everything is encrypted in transit</h2>
+    <p>
+      WebRTC connections are encrypted with DTLS as a mandatory part of the
+      protocol. This is encryption by design, not an added feature that can
+      be switched off.
+    </p>
+
+    <h2>What the pairing server sees</h2>
+    <p>
+      To connect two devices, each briefly talks to our signaling server to
+      exchange connection details (session descriptions and network
+      candidates). The server holds this in memory only for the seconds
+      pairing takes, never writes it to disk, and discards the room as soon
+      as the devices connect or either one leaves. It never sees file
+      names, sizes, types, or contents.
+    </p>
+
+    <h2>No accounts, no contacts, no tracking</h2>
+    <ul>
+      <li>No accounts or logins — we collect no names, emails, or phone numbers.</li>
+      <li>No access to your contact list, and no discovery by phone number or Apple ID.</li>
+      <li>No cookies beyond what's functionally necessary for a session.</li>
+      <li>No analytics that fingerprint individual transfers or individual users.</li>
+    </ul>
+
+    <h2>Questions</h2>
+    <p>
+      If anything here is unclear, read the technical walkthrough on the
+      <a href="/how-it-works">how it works</a> page — it describes exactly
+      what moves where.
+    </p>
+  </article>
+</Base>
+
+<style>
+  .article { max-width: 44rem; padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+  .lede { font-size: 1.15rem; color: var(--ink-soft); }
+  .article h2 { margin-top: 2rem; }
+</style>

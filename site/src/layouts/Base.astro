@@ -1,0 +1,184 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  /** Optional serialized JSON-LD objects to inject into <head> */
+  jsonLd?: object[];
+  /** Optional path to an OG image (relative to site root) */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  jsonLd = [],
+  ogImage = '/og-image.svg',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImage, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2742e6" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CrossDrop" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+
+    {jsonLd.map((obj) => (
+      <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+    ))}
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <nav class="wrap nav" aria-label="Main">
+        <a class="brand" href="/" aria-label="CrossDrop home">
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+            <rect x="1" y="6" width="10" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="15" y="6" width="10" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="13" cy="13" r="1.6" fill="var(--signal)"/>
+          </svg>
+          <span>CrossDrop</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/how-it-works">How it works</a></li>
+          <li><a href="/vs-airdrop">vs AirDrop</a></li>
+          <li><a href="/faq">FAQ</a></li>
+          <li><a class="btn btn-primary nav-cta" href="/#transfer">Send a file</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-grid">
+        <div>
+          <p class="brand-foot mono">CrossDrop</p>
+          <p class="foot-tag">AirDrop for Everyone.</p>
+          <p class="foot-note">Your files never touch our servers.</p>
+        </div>
+        <nav aria-label="Footer">
+          <ul>
+            <li><a href="/how-it-works">How it works</a></li>
+            <li><a href="/vs-airdrop">CrossDrop vs AirDrop</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+
+  .skip-link {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    background: var(--ink);
+    color: #fff;
+    padding: 0.6rem 1rem;
+    z-index: 100;
+  }
+  .skip-link:focus { left: 0.5rem; top: 0.5rem; }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--porcelain) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--mesh);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 0.7rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.75rem, 2.5vw, 1.5rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-links a:not(.btn) {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .nav-links a:not(.btn):hover { color: var(--ink); }
+  .nav-cta { padding: 0.45rem 1rem; font-size: 0.9rem; }
+  @media (max-width: 640px) {
+    .nav-links li:not(:last-child) { display: none; }
+  }
+
+  .site-footer {
+    background: var(--ink);
+    color: #c8d0d9;
+    padding-block: 3rem;
+    margin-top: 2rem;
+  }
+  .footer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-between;
+  }
+  .brand-foot { font-size: 1rem; color: #fff; margin-bottom: 0.25rem; }
+  .foot-tag { margin-bottom: 0.25rem; }
+  .foot-note { font-size: 0.85rem; color: #8b96a3; }
+  .site-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+  .site-footer a { color: #c8d0d9; text-decoration: none; }
+  .site-footer a:hover { color: #fff; text-decoration: underline; }
+</style>

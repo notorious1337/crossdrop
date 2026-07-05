@@ -1,0 +1,145 @@
+/* ------------------------------------------------------------------
+   CrossDrop design tokens
+   Palette: "porcelain & cobalt" — a cool, technical paper base with
+   one electric signal color. Amber appears only when bytes are moving.
+   Type: Bricolage Grotesque (display) / Instrument Sans (body) /
+   IBM Plex Mono (room codes, speeds, byte counts — the product's data).
+------------------------------------------------------------------- */
+
+:root {
+  --porcelain: #f3f5f2;
+  --surface: #ffffff;
+  --ink: #131c26;
+  --ink-soft: #46525f;
+  --signal: #2742e6;
+  --signal-deep: #1b2fae;
+  --beacon: #ffb224;
+  --ok: #1d8a4e;
+  --danger: #c93a3a;
+  --mesh: #d6dcd4;
+
+  --font-display: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 2px rgb(19 28 38 / 0.06), 0 10px 30px -12px rgb(19 28 38 / 0.18);
+  --maxw: 68rem;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--porcelain);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+
+h1 { font-size: clamp(2.1rem, 5.2vw, 3.4rem); font-weight: 700; }
+h2 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); font-weight: 700; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+
+p { margin: 0 0 1em; }
+
+a { color: var(--signal); text-underline-offset: 3px; }
+a:hover { color: var(--signal-deep); }
+
+:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.wrap {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--signal);
+  margin-bottom: 0.75rem;
+}
+
+.mono { font-family: var(--font-mono); }
+
+section { padding-block: clamp(3rem, 8vw, 5.5rem); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--mesh);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: 600 1rem var(--font-body);
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.btn-primary { background: var(--signal); color: #fff; }
+.btn-primary:hover { background: var(--signal-deep); color: #fff; }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--mesh); }
+.btn-ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+table.compare {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  background: var(--surface);
+  border: 1px solid var(--mesh);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+table.compare th, table.compare td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--mesh);
+  vertical-align: top;
+}
+table.compare thead th {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--porcelain);
+}
+table.compare tbody tr:last-child td { border-bottom: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,18 @@
+process.env.PORT = '8793';
+await import('./server.js');
+import WebSocket from 'ws';
+setTimeout(() => { console.log('-- end --'); process.exit(0); }, 5000);
+const open = (ws) => new Promise(r => ws.once('open', r));
+const a = new WebSocket('ws://localhost:8793'); await open(a);
+let room = null;
+a.on('message', d => { const m = JSON.parse(d); console.log('A <-', d.toString()); if (m.type==='created') room = m.room; });
+a.send(JSON.stringify({type:'create'}));
+await new Promise(r => setTimeout(r, 300));
+const b = new WebSocket('ws://localhost:8793'); await open(b);
+b.on('message', d => console.log('B <-', d.toString()));
+b.send(JSON.stringify({type:'join', room}));
+await new Promise(r => setTimeout(r, 300));
+a.send(JSON.stringify({type:'signal', data:{sdp:{type:'offer'}}}));
+b.send(JSON.stringify({type:'signal', data:{candidate:{c:1}}}));
+await new Promise(r => setTimeout(r, 500));
+console.log('done phase 1');

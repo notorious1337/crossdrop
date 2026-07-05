@@ -1,0 +1,291 @@
+---
+/**
+ * The interactive WebRTC island. Everything above and below it on the
+ * page is static HTML — this component is the only client-side JS the
+ * landing page ships.
+ */
+---
+
+<div id="transfer-app" class="card transfer" aria-label="File transfer">
+  <!-- Packet beam: the live connection-state indicator -->
+  <div class="beam" data-state="connecting" aria-hidden="true">
+    <svg viewBox="0 0 320 56" class="beam-svg">
+      <!-- phone -->
+      <rect x="8" y="10" width="22" height="38" rx="4" class="device" />
+      <circle cx="19" cy="42" r="1.8" class="device-dot" />
+      <!-- laptop -->
+      <rect x="286" y="14" width="28" height="20" rx="2.5" class="device" />
+      <rect x="280" y="36" width="40" height="4" rx="2" class="device" />
+      <!-- track -->
+      <line x1="40" y1="29" x2="276" y2="29" class="track" />
+      <!-- packets -->
+      <rect class="packet p1" x="0" y="25" width="8" height="8" rx="2" />
+      <rect class="packet p2" x="0" y="25" width="8" height="8" rx="2" />
+      <rect class="packet p3" x="0" y="25" width="8" height="8" rx="2" />
+    </svg>
+  </div>
+  <p id="conn-status" class="conn-status" role="status" aria-live="polite">
+    Creating your room…
+  </p>
+
+  <!-- Setup: show room code + QR, or join an existing room -->
+  <div data-panel="setup" class="panel">
+    <div class="pair-grid">
+      <div class="pair-host">
+        <p class="pair-label">Scan on your other device</p>
+        <canvas id="qr-canvas" width="220" height="220" aria-label="QR code to join this room"></canvas>
+        <p class="room-code mono" id="room-code" aria-label="Room code">···</p>
+        <button id="copy-link" class="btn btn-ghost btn-small" type="button">Copy join link</button>
+      </div>
+      <div class="pair-or" aria-hidden="true"><span>or</span></div>
+      <div class="pair-join">
+        <label for="join-input" class="pair-label">Have a code from another device?</label>
+        <input
+          id="join-input"
+          class="mono"
+          type="text"
+          inputmode="text"
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          placeholder="swift-otter-42"
+        />
+        <div class="pair-join-actions">
+          <button id="join-btn" class="btn btn-primary" type="button">Join room</button>
+          <button id="scan-btn" class="btn btn-ghost" type="button">Scan QR instead</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Joining via link/code -->
+  <div data-panel="joining" class="panel panel-center" hidden>
+    <p>Pairing with the other device…</p>
+  </div>
+
+  <!-- QR scanner -->
+  <div data-panel="scan" class="panel panel-center" hidden>
+    <video id="scan-video" playsinline muted></video>
+    <p class="scan-hint">Point the camera at the QR code on the other device.</p>
+    <button id="scan-cancel" class="btn btn-ghost" type="button">Cancel</button>
+  </div>
+
+  <!-- Connected: pick, drop, track -->
+  <div data-panel="connected" class="panel" hidden>
+    <div id="drop-zone" class="drop-zone">
+      <p><strong>Drop files here</strong> — or</p>
+      <div class="pick-actions">
+        <label class="btn btn-primary">
+          Choose files
+          <input id="file-input" type="file" multiple class="visually-hidden" />
+        </label>
+        <label class="btn btn-ghost">
+          Send a folder
+          <input id="folder-input" type="file" webkitdirectory class="visually-hidden" />
+        </label>
+      </div>
+      <p class="drop-note">Any file type. Full original quality. Sent directly to the other device.</p>
+    </div>
+    <ul id="file-list" class="file-list" aria-live="polite"></ul>
+    <p id="live-stats" class="live-stats mono" aria-live="polite"></p>
+  </div>
+
+  <!-- Error -->
+  <div data-panel="error" class="panel panel-center" hidden>
+    <p id="error-msg" class="error-msg">Something went wrong.</p>
+    <button id="restart-btn" class="btn btn-primary" type="button">Start a new room</button>
+  </div>
+</div>
+
+<script>
+  import { initTransfer } from '../islands/transfer/main.js';
+  initTransfer();
+</script>
+
+<style>
+  .transfer {
+    padding: clamp(1.25rem, 3vw, 2rem);
+    max-width: 34rem;
+    width: 100%;
+  }
+
+  /* ---------- packet beam ---------- */
+  .beam-svg { width: 100%; height: 56px; display: block; }
+  .device { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+  .device-dot { fill: var(--ink); }
+  .track {
+    stroke: var(--mesh);
+    stroke-width: 2;
+    stroke-dasharray: 2 8;
+    stroke-linecap: round;
+  }
+  .packet { fill: var(--signal); opacity: 0; }
+
+  .beam[data-state='waiting'] .track,
+  .beam[data-state='connecting'] .track {
+    stroke: var(--signal);
+    animation: track-march 1.2s linear infinite;
+  }
+  .beam[data-state='transferring'] .track { stroke: var(--signal); }
+  .beam[data-state='transferring'] .packet {
+    fill: var(--beacon);
+    animation: packet-fly 1.4s linear infinite;
+  }
+  .beam[data-state='transferring'] .p2 { animation-delay: 0.45s; }
+  .beam[data-state='transferring'] .p3 { animation-delay: 0.9s; }
+  .beam[data-state='connected'] .track,
+  .beam[data-state='done'] .track {
+    stroke: var(--ok);
+    stroke-dasharray: none;
+  }
+  .beam[data-state='error'] .track { stroke: var(--danger); }
+
+  @keyframes track-march {
+    to { stroke-dashoffset: -10; }
+  }
+  @keyframes packet-fly {
+    0% { transform: translateX(48px); opacity: 0; }
+    8% { opacity: 1; }
+    92% { opacity: 1; }
+    100% { transform: translateX(276px); opacity: 0; }
+  }
+
+  .conn-status {
+    text-align: center;
+    font-weight: 600;
+    margin: 0.4rem 0 1.25rem;
+    min-height: 1.6em;
+  }
+
+  /* ---------- setup panel ---------- */
+  .pair-grid { display: grid; gap: 1.25rem; }
+  .pair-host { text-align: center; display: grid; justify-items: center; gap: 0.5rem; }
+  .pair-label { font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
+  #qr-canvas {
+    border: 1px solid var(--mesh);
+    border-radius: var(--radius-sm);
+    width: 200px;
+    height: 200px;
+    background: #fff;
+  }
+  .room-code {
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    background: var(--porcelain);
+    border: 1px solid var(--mesh);
+    border-radius: var(--radius-sm);
+    padding: 0.3rem 0.9rem;
+    margin: 0;
+    user-select: all;
+  }
+  .pair-or {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+  }
+  .pair-or::before, .pair-or::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--mesh);
+  }
+  .pair-join { display: grid; gap: 0.6rem; }
+  .pair-join input {
+    font-size: 1rem;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--mesh);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--ink);
+  }
+  .pair-join-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .btn-small { padding: 0.35rem 0.9rem; font-size: 0.85rem; }
+
+  /* ---------- scanner ---------- */
+  .panel-center { display: grid; justify-items: center; gap: 0.75rem; text-align: center; }
+  #scan-video {
+    width: 100%;
+    max-width: 320px;
+    border-radius: var(--radius-sm);
+    background: #000;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  .scan-hint { font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
+
+  /* ---------- connected panel ---------- */
+  .drop-zone {
+    border: 2px dashed var(--mesh);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .drop-zone.is-drag {
+    border-color: var(--signal);
+    background: color-mix(in srgb, var(--signal) 6%, #fff);
+  }
+  .drop-zone p { margin: 0 0 0.75rem; }
+  .pick-actions { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+  .drop-note { font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.9rem; margin-bottom: 0; }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .file-list { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+  :global(.file-row) {
+    border: 1px solid var(--mesh);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.8rem;
+    display: grid;
+    gap: 0.45rem;
+  }
+  :global(.file-row.is-done) { border-color: var(--ok); }
+  :global(.file-head) { display: flex; gap: 0.5rem; align-items: baseline; font-size: 0.92rem; }
+  :global(.file-dir) { color: var(--signal); }
+  :global(.file-name) {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  :global(.file-size) { color: var(--ink-soft); font-size: 0.8rem; }
+  :global(.bar) {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--porcelain);
+    overflow: hidden;
+  }
+  :global(.bar-fill) {
+    height: 100%;
+    width: 0%;
+    background: var(--beacon);
+    border-radius: inherit;
+    transition: width 0.15s linear;
+  }
+  :global(.file-row.is-done .bar-fill) { background: var(--ok); }
+  :global(.file-actions) { display: flex; gap: 0.5rem; font-size: 0.85rem; color: var(--ok); }
+  .live-stats { text-align: center; font-size: 0.85rem; color: var(--ink-soft); min-height: 1.4em; margin: 0.75rem 0 0; }
+
+  .error-msg { color: var(--danger); font-weight: 500; }
+
+  @media (min-width: 560px) {
+    .pair-grid {
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+    }
+    .pair-or { flex-direction: column; height: 100%; }
+    .pair-or::before, .pair-or::after {
+      border-top: 0;
+      border-left: 1px solid var(--mesh);
+      min-height: 2rem;
+    }
+  }
+</style>
