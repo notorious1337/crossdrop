@@ -14,7 +14,7 @@ services:
     startCommand: npm start
     autoDeploy: true
 
-  - type: web
+  - type: static
     name: crossdrop-site
     runtime: static
     rootDir: site
