@@ -31,6 +31,62 @@ const ogImageUrl = new URL(ogImage, Astro.site);
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#2742e6" />
 
+    <script is:inline>
+      (() => {
+        const storageKey = 'crossdrop-theme';
+        const root = document.documentElement;
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        const lightThemeColor = '#2742e6';
+        const darkThemeColor = '#0c1117';
+        const systemQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        let storedTheme = null;
+        try {
+          storedTheme = localStorage.getItem(storageKey);
+        } catch {
+          storedTheme = null;
+        }
+
+        const getSystemTheme = () => (systemQuery.matches ? 'dark' : 'light');
+
+        const applyTheme = (theme) => {
+          const nextTheme = theme === 'dark' ? 'dark' : 'light';
+          root.dataset.theme = nextTheme;
+          root.style.colorScheme = nextTheme;
+
+          if (metaTheme) {
+            metaTheme.setAttribute('content', nextTheme === 'dark' ? darkThemeColor : lightThemeColor);
+          }
+
+          const toggle = document.querySelector('[data-theme-toggle]');
+          const label = document.querySelector('[data-theme-label]');
+          if (toggle) toggle.setAttribute('aria-pressed', String(nextTheme === 'dark'));
+          if (label) label.textContent = nextTheme === 'dark' ? 'Light' : 'Dark';
+        };
+
+        applyTheme(storedTheme || getSystemTheme());
+
+        if (!storedTheme && systemQuery.addEventListener) {
+          systemQuery.addEventListener('change', () => applyTheme(getSystemTheme()));
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+          const toggle = document.querySelector('[data-theme-toggle]');
+          if (!toggle) return;
+
+          toggle.addEventListener('click', () => {
+            const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+            try {
+              localStorage.setItem(storageKey, nextTheme);
+            } catch {
+              /* ignore storage failures */
+            }
+            applyTheme(nextTheme);
+          });
+        });
+      })();
+    </script>
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="CrossDrop" />
@@ -72,12 +128,18 @@ const ogImageUrl = new URL(ogImage, Astro.site);
           </svg>
           <span>CrossDrop</span>
         </a>
-        <ul class="nav-links">
-          <li><a href="/how-it-works">How it works</a></li>
-          <li><a href="/vs-airdrop">vs AirDrop</a></li>
-          <li><a href="/faq">FAQ</a></li>
-          <li><a class="btn btn-primary nav-cta" href="/#transfer">Send a file</a></li>
-        </ul>
+        <div class="nav-actions">
+          <ul class="nav-links">
+            <li><a href="/how-it-works">How it works</a></li>
+            <li><a href="/vs-airdrop">vs AirDrop</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a class="btn btn-primary nav-cta" href="/#transfer">Send a file</a></li>
+          </ul>
+          <button class="btn btn-ghost theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span aria-hidden="true">◐</span>
+            <span data-theme-label>Dark</span>
+          </button>
+        </div>
       </nav>
     </header>
 
@@ -159,8 +221,24 @@ const ogImageUrl = new URL(ogImage, Astro.site);
   }
   .nav-links a:not(.btn):hover { color: var(--ink); }
   .nav-cta { padding: 0.45rem 1rem; font-size: 0.9rem; }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .theme-toggle {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  .theme-toggle span:first-child {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
   @media (max-width: 640px) {
+    .nav-actions { gap: 0.5rem; }
     .nav-links li:not(:last-child) { display: none; }
+    .theme-toggle { padding-inline: 0.75rem; }
   }
 
   .site-footer {

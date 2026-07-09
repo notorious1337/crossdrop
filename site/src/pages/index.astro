@@ -64,6 +64,11 @@ const steps = [
           compression.
         </p>
         <p class="hero-note mono">Your files never touch our servers.</p>
+        <div class="hero-badges" aria-label="Highlights">
+          <span class="hero-badge">No app install</span>
+          <span class="hero-badge">No login</span>
+          <span class="hero-badge">No compression</span>
+        </div>
       </div>
       <div class="hero-app" id="transfer">
         <Transfer />
@@ -151,6 +156,23 @@ const steps = [
     font-size: 0.85rem;
     color: var(--signal);
   }
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1.25rem;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--mesh);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
   .hero-app {
     display: flex;
     justify-content: center;
@@ -185,7 +207,17 @@ const steps = [
     gap: 1rem;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
-  .feature { padding: 1.25rem; }
+  .feature {
+    padding: 1.25rem;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .feature:hover,
+  .step:hover,
+  .faq-item:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--signal) 30%, var(--mesh));
+    box-shadow: 0 18px 36px -26px rgb(19 28 38 / 0.35);
+  }
   .feature-icon { font-size: 1.4rem; }
   .feature h3 { margin: 0.5rem 0 0.25rem; }
   .feature p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
@@ -198,7 +230,10 @@ const steps = [
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
-  .step { padding: 1.5rem 1.25rem; }
+  .step {
+    padding: 1.5rem 1.25rem;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
   .step-num {
     display: inline-grid;
     place-items: center;
@@ -215,11 +250,20 @@ const steps = [
 
   .faq-wrap { max-width: 46rem; }
   .faq-list { display: grid; gap: 0.75rem; margin-bottom: 1.25rem; }
-  .faq-item { padding: 0; }
+  .faq-item {
+    padding: 0;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
   .faq-item summary {
     cursor: pointer;
     font-weight: 600;
     padding: 1rem 1.25rem;
   }
   .faq-item p { padding: 0 1.25rem 1rem; margin: 0; color: var(--ink-soft); }
+
+  @media (max-width: 899px) {
+    .hero-badges {
+      justify-content: center;
+    }
+  }
 </style>

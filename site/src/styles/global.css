@@ -7,8 +7,10 @@
 ------------------------------------------------------------------- */
 
 :root {
+  color-scheme: light;
   --porcelain: #f3f5f2;
   --surface: #ffffff;
+  --surface-strong: #eef2ea;
   --ink: #131c26;
   --ink-soft: #46525f;
   --signal: #2742e6;
@@ -17,6 +19,8 @@
   --ok: #1d8a4e;
   --danger: #c93a3a;
   --mesh: #d6dcd4;
+  --page-glow: color-mix(in srgb, var(--signal) 12%, transparent);
+  --page-glow-2: color-mix(in srgb, var(--beacon) 10%, transparent);
 
   --font-display: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif;
   --font-body: 'Instrument Sans', system-ui, -apple-system, sans-serif;
@@ -24,8 +28,26 @@
 
   --radius: 14px;
   --radius-sm: 8px;
-  --shadow: 0 1px 2px rgb(19 28 38 / 0.06), 0 10px 30px -12px rgb(19 28 38 / 0.18);
+  --shadow: 0 1px 2px rgb(19 28 38 / 0.06), 0 14px 36px -18px rgb(19 28 38 / 0.22);
   --maxw: 68rem;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --porcelain: #0c1117;
+  --surface: #111826;
+  --surface-strong: #182233;
+  --ink: #edf2fb;
+  --ink-soft: #a9b4c2;
+  --signal: #7f9cff;
+  --signal-deep: #aec0ff;
+  --beacon: #ffd166;
+  --ok: #6ed38a;
+  --danger: #ff8a8a;
+  --mesh: #2a3645;
+  --page-glow: color-mix(in srgb, var(--signal) 16%, transparent);
+  --page-glow-2: color-mix(in srgb, var(--beacon) 12%, transparent);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 18px 42px -20px rgb(0 0 0 / 0.55);
 }
 
 * { box-sizing: border-box; }
@@ -37,7 +59,11 @@ html {
 
 body {
   margin: 0;
-  background: var(--porcelain);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, var(--page-glow), transparent 34%),
+    radial-gradient(circle at 88% 0%, var(--page-glow-2), transparent 28%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 55%, var(--porcelain)) 0%, var(--porcelain) 40%, color-mix(in srgb, var(--surface) 85%, var(--porcelain)) 100%);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 1.0625rem;
@@ -87,8 +113,8 @@ a:hover { color: var(--signal-deep); }
 section { padding-block: clamp(3rem, 8vw, 5.5rem); }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--mesh);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mesh) 88%, var(--signal) 12%);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
@@ -110,6 +136,10 @@ section { padding-block: clamp(3rem, 8vw, 5.5rem); }
 .btn-ghost { background: transparent; color: var(--ink); border-color: var(--mesh); }
 .btn-ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+::selection {
+  background: color-mix(in srgb, var(--signal) 24%, transparent);
+}
 
 table.compare {
   width: 100%;

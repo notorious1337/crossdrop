@@ -91,7 +91,7 @@ export function initTransfer() {
     });
 
     session.addEventListener('error', (e) => {
-      fail(e.detail.message || 'Something went wrong while pairing.');
+      fail(e.detail.message || 'Unable to pair right now.');
     });
 
     const joinCode = new URLSearchParams(location.search).get('join');
